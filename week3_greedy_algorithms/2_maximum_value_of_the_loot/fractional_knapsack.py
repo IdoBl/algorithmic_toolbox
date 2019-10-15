@@ -5,9 +5,13 @@ import sys
 def get_optimal_value(capacity, weights, values):
     value = 0.
     # Find value to weight ratio for input
-    ratio = {weight: value / weight for value, weight in zip(values, weights)}
+    # Next 2 lines didn't work for the case of few items with the same weight which is used as key
+    # ratio = {weight: value / weight for value, weight in zip(values, weights)}
+    # sorted_ratio = [(key, ratio[key]) for key in sorted(ratio, key=ratio.get, reverse=True)]
+    # So, I used list of tuples instead of set
+    ratio = [(weight, value / weight) for value, weight in zip(values, weights)]
     # Sort decreasing accord to ratio (i.e., max weight per kg)
-    sorted_ratio = [(key, ratio[key]) for key in sorted(ratio, key=ratio.get, reverse=True)]
+    sorted_ratio = sorted(ratio, key=lambda entry: entry[1], reverse=True)
     # Loop while not used all items
     for i in range(len(sorted_ratio)):
         # If finished fulling the bag
@@ -18,7 +22,6 @@ def get_optimal_value(capacity, weights, values):
         # Add a kilograms of biggest ratio to value
         value += a * sorted_ratio[i][1]
         # Update values
-        # sorted_ratio[i][0] -= a
         capacity -= a
     return value
 
